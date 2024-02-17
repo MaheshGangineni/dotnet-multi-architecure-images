@@ -115,6 +115,15 @@ aarch64
 
 Architecture can be infered from image manifest using ```docker inspect <image-id>```. But it may not be accurate due some to the mistakes we do in writing dockerfile, but may not affect the build. check more on this [improving-multiplatform-container-support](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/)
 
+## Sample images on docker hub
+```
+docker pull maheshgangineni/dotnet-samples:alpine-arm64
+```
+```
+docker pull maheshgangineni/dotnet-samples:alpine-amd64
+```
+- [dockerhub-link](https://hub.docker.com/r/maheshgangineni/dotnet-samples/tags)
+
 ## Related & useful links
 - [docker-multi-platform-builds](https://docs.docker.com/build/building/multi-platform/)
 - [improving-multiplatform-container-support](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/)
