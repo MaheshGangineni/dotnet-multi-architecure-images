@@ -24,25 +24,25 @@ However, there are some solutions to consider:
   - Build a container image for a specific architecture (different than your machine).
   - Build multiple container images at once, for multiple architectures.
 
-We are focusing on the first way mentioned in multi-architecture images.
+We are focusing on the first one mentioned in multi-architecture images.
 
 ## Mutli-platform build
 
 I am using a windows machine on which docker desktop is installed and Os/Arch are as follows:
 ```console
-   Docker client arch : windows/amd64
-   Docker engine arch : linux/amd64
+Docker client arch : windows/amd64
+Docker engine arch : linux/amd64
 ```
 
 You can verify yours using below cmd.
 
 ```console 
-    docker version
+docker version
 ```
 Docker has a ```--platform``` switch that you can use to control the output of your images.
 
 ```console 
-    docker build --platform platfro-arch -t your-image-name:tag .
+docker build --platform <platfro-arch> -t your-image-name:tag .
 ```
 where ```platfro-arch``` can be ```linux/amd64```, ```linux/arm4```, ```darwin/amd64``` etc.
 
@@ -51,7 +51,7 @@ But when you try to build the .NET images using above command and provide the pl
 **Ex:**
 
 ```console 
-    docker buildx build --platform linux/arm64 -t docker-arch-v8:alpine -f docker-build-arch/Dockerfile .
+docker buildx build --platform linux/arm64 -t docker-arch-v8:alpine -f docker-build-arch/Dockerfile .
 ```
 I ran the above cmd to build an arm64 based image on my machine, build failed with below error.
 
@@ -73,8 +73,7 @@ So we need to explictly get the sdk which matches with the host (on which image 
 
 Here hardcoding the platform for given stage is a bad idea for so many reasons like all devs may not work machines which has same architecture or CICD runner architecures may change.
 
-Docker out of box provides build arugmnets like ```BUILDPLATFORM``` ,```
-TARGETPLATFORM```, ```TARGETARCH``` etc.
+Docker out of box provides build arugmnets like ```BUILDPLATFORM``` ,```TARGETPLATFORM```, ```TARGETARCH``` etc.
 
 we use these build arugmnets to get the native sdk and build binaries based on target architecure.
 After modification of dockerfile build stage looks as below-
@@ -94,7 +93,7 @@ RUN dotnet publish "docker-build-arch.csproj" -c Release -a $TARGETARCH --no-res
 ```
 
 **Note:**  dotnet sdk(s) prior to 8 may not support  architecure flag 
-```-a``` for  ```restore```,```buold``` and ```publish``` cmds. In those scenarios you can use [rids](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog)
+```-a``` for  ```restore```,```build``` and ```publish``` cmds. In those scenarios you can use [rids](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog)
 
 On doing the above mentioned changes you can successfully build images targeted to different architecures.
 
@@ -116,14 +115,14 @@ aarch64
 Architecture can be infered from image manifest using ```docker inspect <image-id>```. But it may not be accurate due some to the mistakes we do in writing dockerfile, but may not affect the build. check more on this [improving-multiplatform-container-support](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/)
 
 ## Sample images on docker hub
+Images build using this project are available on [dockerhub-link](https://hub.docker.com/r/maheshgangineni/dotnet-samples/tags).Docker pull commands are as follows
+
 ```
 docker pull maheshgangineni/dotnet-samples:alpine-arm64
 ```
 ```
 docker pull maheshgangineni/dotnet-samples:alpine-amd64
 ```
-- [dockerhub-link](https://hub.docker.com/r/maheshgangineni/dotnet-samples/tags)
-
 ## Related & useful links
 - [docker-multi-platform-builds](https://docs.docker.com/build/building/multi-platform/)
 - [improving-multiplatform-container-support](https://devblogs.microsoft.com/dotnet/improving-multiplatform-container-support/)
